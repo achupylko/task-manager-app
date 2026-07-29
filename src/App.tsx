@@ -1,5 +1,7 @@
-import type { Task } from './types/task';
+import { useState } from 'react';
+import TaskForm from './components/TaskForm/TaskForm';
 import TaskList from './components/TaskList/TaskList';
+import type { Task, TaskFormData } from './types/task';
 
 const mockTasks: Task[] = [
   {
@@ -47,10 +49,27 @@ const mockTasks: Task[] = [
 ];
 
 function App() {
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+
+  const handleAddTask = (formData: TaskFormData): void => {
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
+    const newTask: Task = {
+      ...formData,
+      id,
+      status: 'active',
+      createdAt,
+    };
+
+    setTasks(currentTasks => [newTask, ...currentTasks]);
+  };
+
   return (
     <>
-      <h1>Менеджер завдань</h1>
-      <TaskList tasks={mockTasks} />
+      <h1>Task Manager</h1>
+      <TaskForm onAddTask={handleAddTask} />
+      <TaskList tasks={tasks} />
     </>
   );
 }
