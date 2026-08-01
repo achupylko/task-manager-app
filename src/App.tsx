@@ -65,11 +65,24 @@ function App() {
     setTasks(currentTasks => [newTask, ...currentTasks]);
   };
 
+  const handleToggleStatus = (id: Task['id']): void => {
+    setTasks(currentTasks =>
+      currentTasks.map(task =>
+        task.id === id
+          ? {
+              ...task,
+              status: task.status === 'active' ? 'completed' : 'active',
+            }
+          : task
+      )
+    );
+  };
+
   return (
     <>
       <h1>Task Manager</h1>
       <TaskForm onAddTask={handleAddTask} />
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onToggleStatus={handleToggleStatus} />
     </>
   );
 }
