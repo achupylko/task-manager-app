@@ -3,14 +3,15 @@ import TaskItem from '../TaskItem/TaskItem';
 
 interface TaskListProps {
   tasks: Task[];
+  onToggleStatus: (id: Task['id']) => void;
 }
 
-function TaskList({ tasks }: TaskListProps) {
+function TaskList({ tasks, onToggleStatus }: TaskListProps) {
   return tasks.length > 0 ? (
     <ul>
       {tasks.map(task => (
         <li key={task.id}>
-          <TaskItem task={task} />
+          <TaskItem task={task} onToggleStatus={onToggleStatus} />
         </li>
       ))}
     </ul>
