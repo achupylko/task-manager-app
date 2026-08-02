@@ -4,9 +4,10 @@ import { formatDateTime } from '../../utils/formatDateTime';
 interface TaskItemProps {
   task: Task;
   onToggleStatus: (id: Task['id']) => void;
+  onDeleteTask: (id: Task['id']) => void;
 }
 
-function TaskItem({ task, onToggleStatus }: TaskItemProps) {
+function TaskItem({ task, onToggleStatus, onDeleteTask }: TaskItemProps) {
   const { id, title, description, status, createdAt } = task;
 
   const statusLabel = status === 'active' ? 'Active' : 'Completed';
@@ -33,7 +34,11 @@ function TaskItem({ task, onToggleStatus }: TaskItemProps) {
           Edit
         </button>
 
-        <button type="button" aria-label={`Delete task ${title}`}>
+        <button
+          onClick={() => onDeleteTask(id)}
+          type="button"
+          aria-label={`Delete task ${title}`}
+        >
           Delete
         </button>
       </div>

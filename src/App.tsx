@@ -78,11 +78,19 @@ function App() {
     );
   };
 
+  const handleDeleteTask = (id: Task['id']): void => {
+    setTasks(currentTasks => currentTasks.filter(task => task.id !== id));
+  };
+
   return (
     <>
       <h1>Task Manager</h1>
       <TaskForm onAddTask={handleAddTask} />
-      <TaskList tasks={tasks} onToggleStatus={handleToggleStatus} />
+      <TaskList
+        tasks={tasks}
+        onToggleStatus={handleToggleStatus}
+        onDeleteTask={handleDeleteTask}
+      />
     </>
   );
 }
