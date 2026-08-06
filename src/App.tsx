@@ -48,8 +48,14 @@ const mockTasks: Task[] = [
   },
 ];
 
+const EMPTY_FORM_DATA: TaskFormData = {
+  title: '',
+  description: '',
+};
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [editingTaskId, setEditingTaskId] = useState<Task['id'] | null>(null);
 
   const handleAddTask = (formData: TaskFormData): void => {
     const id = crypto.randomUUID();
@@ -80,16 +86,50 @@ function App() {
 
   const handleDeleteTask = (id: Task['id']): void => {
     setTasks(currentTasks => currentTasks.filter(task => task.id !== id));
+
+    setEditingTaskId(currentId => (currentId === id ? null : currentId));
+  };
+
+  const handleStartEditing = (id: Task['id']): void => {
+    setEditingTaskId(currentEditingTaskId => currentEditingTaskId ?? id);
+  };
+
+  const handleCancelEditing = (): void => {
+    setEditingTaskId(null);
+  };
+
+  const handleUpdateTask = (id: Task['id'], formData: TaskFormData): void => {
+    setTasks(currentTasks =>
+      currentTasks.map(task =>
+        task.id === id
+          ? {
+              ...task,
+              ...formData,
+            }
+          : task
+      )
+    );
+
+    setEditingTaskId(null);
   };
 
   return (
     <>
       <h1>Task Manager</h1>
-      <TaskForm onAddTask={handleAddTask} />
+      <TaskForm
+        initialData={EMPTY_FORM_DATA}
+        submitLabel="Add New Task"
+        onSubmit={handleAddTask}
+      />
+
       <TaskList
         tasks={tasks}
+        editingTaskId={editingTaskId}
         onToggleStatus={handleToggleStatus}
         onDeleteTask={handleDeleteTask}
+        onStartEditing={handleStartEditing}
+        onCancelEditing={handleCancelEditing}
+        onUpdateTask={handleUpdateTask}
       />
     </>
   );

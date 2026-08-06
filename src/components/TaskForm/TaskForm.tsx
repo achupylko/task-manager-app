@@ -1,45 +1,46 @@
-import {
-  useId,
-  useState,
-  type ChangeEvent,
-  type SubmitEventHandler,
-} from 'react';
-import type { TaskFormData, TaskFormErrors } from '../../types/task';
+import { useId, useState } from 'react';
+import type { ChangeEventHandler, SubmitEventHandler } from 'react';
+
 import validateTaskForm from '../../utils/validateTaskForm';
+import type { TaskFormData, TaskFormErrors } from '../../types/task';
 
 interface TaskFormProps {
-  onAddTask: (formData: TaskFormData) => void;
+  initialData: TaskFormData;
+  submitLabel: string;
+  onSubmit: (formData: TaskFormData) => void;
+  onCancel?: () => void;
 }
 
-const INITIAL_FORM_DATA: TaskFormData = {
-  title: '',
-  description: '',
-};
-
-const TaskForm = ({ onAddTask }: TaskFormProps) => {
+const TaskForm = ({
+  initialData,
+  submitLabel,
+  onSubmit,
+  onCancel,
+}: TaskFormProps) => {
   const id = useId();
-  const [formData, setFormData] = useState<TaskFormData>(INITIAL_FORM_DATA);
+
+  const [formData, setFormData] = useState<TaskFormData>(initialData);
   const [errors, setErrors] = useState<TaskFormErrors>({});
 
   const handleSubmit: SubmitEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
 
-    const formDataErrors: TaskFormErrors = validateTaskForm(formData);
+    const normalizedFormData: TaskFormData = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+    };
+
+    const formDataErrors = validateTaskForm(normalizedFormData);
 
     setErrors(formDataErrors);
 
-    const hasFormDataErrors = Object.keys(formDataErrors).length > 0;
-
-    if (hasFormDataErrors) {
+    if (Object.keys(formDataErrors).length > 0) {
       return;
     }
 
-    onAddTask({
-      title: formData.title.trim(),
-      description: formData.description.trim(),
-    });
+    onSubmit(normalizedFormData);
 
-    setFormData(INITIAL_FORM_DATA);
+    setFormData(initialData);
     setErrors({});
   };
 
@@ -56,26 +57,15 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
     });
   };
 
-  const handleChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value;
+  const handleChangeField: ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = event => {
+    const { name, value } = event.currentTarget;
+    const field = name as keyof TaskFormData;
 
-    setFormData(previousFormData => ({
-      ...previousFormData,
-      title: value,
-    }));
+    setFormData(previousFormData => ({ ...previousFormData, [field]: value }));
 
-    clearError('title');
-  };
-
-  const handleChangeDescription = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const value = event.currentTarget.value;
-
-    setFormData(previousFormData => ({
-      ...previousFormData,
-      description: value,
-    }));
-
-    clearError('description');
+    clearError(field);
   };
 
   return (
@@ -84,7 +74,7 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
       <input
         type="text"
         value={formData.title}
-        onChange={handleChangeTitle}
+        onChange={handleChangeField}
         name="title"
         id={`${id}-title`}
         aria-invalid={Boolean(errors.title)}
@@ -102,7 +92,7 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
       <label htmlFor={`${id}-description`}>Description</label>
       <textarea
         value={formData.description}
-        onChange={handleChangeDescription}
+        onChange={handleChangeField}
         name="description"
         id={`${id}-description`}
         aria-invalid={Boolean(errors.description)}
@@ -117,7 +107,12 @@ const TaskForm = ({ onAddTask }: TaskFormProps) => {
         </p>
       )}
 
-      <button type="submit">Add New Task</button>
+      <button type="submit">{submitLabel}</button>
+      {onCancel && (
+        <button type="button" onClick={onCancel}>
+          Cancel
+        </button>
+      )}
     </form>
   );
 };
