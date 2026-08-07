@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import TaskForm from './components/TaskForm/TaskForm';
 import TaskList from './components/TaskList/TaskList';
-import type { Task, TaskFormData } from './types/task';
+import type { Task, TaskFilter, TaskFormData } from './types/task';
+import TaskFilters from './components/TaskFilters/TaskFilters';
 
 const mockTasks: Task[] = [
   {
@@ -53,9 +54,12 @@ const EMPTY_FORM_DATA: TaskFormData = {
   description: '',
 };
 
+const INITIAL_FILTER: TaskFilter = 'all';
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [editingTaskId, setEditingTaskId] = useState<Task['id'] | null>(null);
+  const [filter, setFilter] = useState<TaskFilter>(INITIAL_FILTER);
 
   const handleAddTask = (formData: TaskFormData): void => {
     const id = crypto.randomUUID();
@@ -113,6 +117,18 @@ function App() {
     setEditingTaskId(null);
   };
 
+  const filteredTasks =
+    filter === 'all' ? tasks : tasks.filter(task => task.status === filter);
+
+  const handleChangeFilter = (nextFilter: TaskFilter): void => {
+    setFilter(nextFilter);
+  };
+
+  const emptyState =
+    tasks.length === 0
+      ? 'No tasks yet. Add your first task.'
+      : `No ${filter} tasks.`;
+
   return (
     <>
       <h1>Task Manager</h1>
@@ -122,9 +138,16 @@ function App() {
         onSubmit={handleAddTask}
       />
 
+      <TaskFilters
+        currentFilter={filter}
+        onChangeFilter={handleChangeFilter}
+        isFiltersDisabled={editingTaskId !== null}
+      />
+
       <TaskList
-        tasks={tasks}
+        tasks={filteredTasks}
         editingTaskId={editingTaskId}
+        emptyState={emptyState}
         onToggleStatus={handleToggleStatus}
         onDeleteTask={handleDeleteTask}
         onStartEditing={handleStartEditing}
