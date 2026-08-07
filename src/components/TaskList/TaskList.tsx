@@ -4,6 +4,7 @@ import TaskItem from '../TaskItem/TaskItem';
 interface TaskListProps {
   tasks: Task[];
   editingTaskId: Task['id'] | null;
+  emptyState: string;
   onToggleStatus: (id: Task['id']) => void;
   onDeleteTask: (id: Task['id']) => void;
   onStartEditing: (id: Task['id']) => void;
@@ -14,6 +15,7 @@ interface TaskListProps {
 function TaskList({
   tasks,
   editingTaskId,
+  emptyState,
   onToggleStatus,
   onDeleteTask,
   onStartEditing,
@@ -38,7 +40,7 @@ function TaskList({
       ))}
     </ul>
   ) : (
-    <p>Ще немає завдань. Додайте своє перше завдання.</p>
+    <p>{emptyState}</p>
   );
 }
 
