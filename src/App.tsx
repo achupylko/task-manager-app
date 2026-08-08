@@ -3,6 +3,7 @@ import TaskForm from './components/TaskForm/TaskForm';
 import TaskList from './components/TaskList/TaskList';
 import type { Task, TaskFilter, TaskFormData } from './types/task';
 import TaskFilters from './components/TaskFilters/TaskFilters';
+import TaskSearch from './components/TaskSearch/TaskSearch';
 
 const mockTasks: Task[] = [
   {
@@ -60,6 +61,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [editingTaskId, setEditingTaskId] = useState<Task['id'] | null>(null);
   const [filter, setFilter] = useState<TaskFilter>(INITIAL_FILTER);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddTask = (formData: TaskFormData): void => {
     const id = crypto.randomUUID();
@@ -120,14 +122,31 @@ function App() {
   const filteredTasks =
     filter === 'all' ? tasks : tasks.filter(task => task.status === filter);
 
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+
+  const visibleTasks =
+    normalizedSearchQuery === ''
+      ? filteredTasks
+      : filteredTasks.filter(
+          task =>
+            task.title.toLowerCase().includes(normalizedSearchQuery) ||
+            task.description.toLowerCase().includes(normalizedSearchQuery)
+        );
+
   const handleChangeFilter = (nextFilter: TaskFilter): void => {
     setFilter(nextFilter);
+  };
+
+  const handleChangeSearchQuery = (nextSearchQuery: string): void => {
+    setSearchQuery(nextSearchQuery);
   };
 
   const emptyState =
     tasks.length === 0
       ? 'No tasks yet. Add your first task.'
-      : `No ${filter} tasks.`;
+      : normalizedSearchQuery !== '' && visibleTasks.length === 0
+        ? `No tasks found for "${searchQuery.trim()}".`
+        : `No ${filter} tasks.`;
 
   return (
     <>
@@ -138,6 +157,12 @@ function App() {
         onSubmit={handleAddTask}
       />
 
+      <TaskSearch
+        currentSearchQuery={searchQuery}
+        onChangeSearchQuery={handleChangeSearchQuery}
+        isSearchDisabled={editingTaskId !== null}
+      />
+
       <TaskFilters
         currentFilter={filter}
         onChangeFilter={handleChangeFilter}
@@ -145,7 +170,7 @@ function App() {
       />
 
       <TaskList
-        tasks={filteredTasks}
+        tasks={visibleTasks}
         editingTaskId={editingTaskId}
         emptyState={emptyState}
         onToggleStatus={handleToggleStatus}
