@@ -11,7 +11,8 @@ export const isTask = (value: unknown): value is Task => {
     typeof task.id === 'string' &&
     typeof task.title === 'string' &&
     typeof task.description === 'string' &&
-    (task.status === 'active' || task.status === 'completed')
+    (task.status === 'active' || task.status === 'completed') &&
+    typeof task.createdAt === 'string'
   );
 };
 
