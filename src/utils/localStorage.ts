@@ -6,7 +6,7 @@ export const loadFromLocalStorage = <T>(key: string): T | null => {
       return null;
     }
 
-    return JSON.parse(value) as T;
+    return JSON.parse(value);
   } catch (error) {
     console.error(`Failed to load "${key}" from localStorage:`, error);
     return null;
