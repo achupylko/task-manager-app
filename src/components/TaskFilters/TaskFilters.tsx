@@ -12,7 +12,8 @@ const TaskFilters = ({
   isFiltersDisabled,
 }: TaskFiltersProps) => {
   return (
-    <div>
+    <fieldset>
+      <legend>Filter tasks</legend>
       <button
         type="button"
         onClick={() => onChangeFilter('all')}
@@ -37,7 +38,7 @@ const TaskFilters = ({
       >
         Completed
       </button>
-    </div>
+    </fieldset>
   );
 };
 

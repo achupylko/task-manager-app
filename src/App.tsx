@@ -115,7 +115,7 @@ function App() {
         : `No ${filter} tasks.`;
 
   return (
-    <>
+    <main>
       <h1>Task Manager</h1>
       <TaskForm
         initialData={EMPTY_FORM_DATA}
@@ -145,7 +145,7 @@ function App() {
         onCancelEditing={handleCancelEditing}
         onUpdateTask={handleUpdateTask}
       />
-    </>
+    </main>
   );
 }
 
