@@ -25,8 +25,6 @@ function TaskItem({
 }: TaskItemProps) {
   const { id, title, description, status, createdAt } = task;
 
-  const isCompleted = status === 'completed';
-
   if (isEditing) {
     const initialData: TaskFormData = {
       title,
@@ -35,11 +33,13 @@ function TaskItem({
 
     return (
       <article>
+        <h2>Edit: {title}</h2>
         <TaskForm
           initialData={initialData}
           submitLabel="Save Changes"
           onSubmit={formData => onUpdateTask(id, formData)}
           onCancel={onCancelEditing}
+          autoFocusTitle={true}
         />
       </article>
     );
@@ -47,7 +47,7 @@ function TaskItem({
 
   return (
     <article>
-      <h3>{title}</h3>
+      <h2>{title}</h2>
 
       {description !== '' && <p>{description}</p>}
 
@@ -59,8 +59,9 @@ function TaskItem({
         <button
           type="button"
           onClick={() => onToggleStatus(id)}
-          aria-label={`Toggle completion status for task ${title}`}
-          aria-pressed={isCompleted}
+          aria-label={`Mark as ${
+            status === 'active' ? 'complete' : 'active'
+          }: "${title}"`}
         >
           Mark as {status === 'active' ? 'complete' : 'active'}
         </button>

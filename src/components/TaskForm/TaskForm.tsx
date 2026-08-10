@@ -9,6 +9,7 @@ interface TaskFormProps {
   submitLabel: string;
   onSubmit: (formData: TaskFormData) => void;
   onCancel?: () => void;
+  autoFocusTitle?: boolean;
 }
 
 const TaskForm = ({
@@ -16,6 +17,7 @@ const TaskForm = ({
   submitLabel,
   onSubmit,
   onCancel,
+  autoFocusTitle = false,
 }: TaskFormProps) => {
   const id = useId();
 
@@ -70,49 +72,56 @@ const TaskForm = ({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <label htmlFor={`${id}-title`}>Title</label>
-      <input
-        type="text"
-        value={formData.title}
-        onChange={handleChangeField}
-        name="title"
-        id={`${id}-title`}
-        aria-invalid={Boolean(errors.title)}
-        aria-describedby={errors.title ? `${id}-title-error` : undefined}
-        minLength={3}
-        maxLength={100}
-        required
-      />
-      {errors.title && (
-        <p id={`${id}-title-error`} role="alert">
-          {errors.title}
-        </p>
-      )}
+      <div>
+        <label htmlFor={`${id}-title`}>Title</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={handleChangeField}
+          name="title"
+          id={`${id}-title`}
+          aria-invalid={Boolean(errors.title)}
+          aria-describedby={errors.title ? `${id}-title-error` : undefined}
+          minLength={3}
+          maxLength={100}
+          required
+          autoFocus={autoFocusTitle}
+        />
+        {errors.title && (
+          <p id={`${id}-title-error`} role="alert">
+            {errors.title}
+          </p>
+        )}
+      </div>
 
-      <label htmlFor={`${id}-description`}>Description</label>
-      <textarea
-        value={formData.description}
-        onChange={handleChangeField}
-        name="description"
-        id={`${id}-description`}
-        aria-invalid={Boolean(errors.description)}
-        aria-describedby={
-          errors.description ? `${id}-description-error` : undefined
-        }
-        maxLength={500}
-      />
-      {errors.description && (
-        <p id={`${id}-description-error`} role="alert">
-          {errors.description}
-        </p>
-      )}
+      <div>
+        <label htmlFor={`${id}-description`}>Description</label>
+        <textarea
+          value={formData.description}
+          onChange={handleChangeField}
+          name="description"
+          id={`${id}-description`}
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby={
+            errors.description ? `${id}-description-error` : undefined
+          }
+          maxLength={500}
+        />
+        {errors.description && (
+          <p id={`${id}-description-error`} role="alert">
+            {errors.description}
+          </p>
+        )}
+      </div>
 
-      <button type="submit">{submitLabel}</button>
-      {onCancel && (
-        <button type="button" onClick={onCancel}>
-          Cancel
-        </button>
-      )}
+      <div>
+        <button type="submit">{submitLabel}</button>
+        {onCancel && (
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 };
